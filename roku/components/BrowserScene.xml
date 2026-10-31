@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="BrowserScene" extends="Scene"><script type="text/brightscript" uri="pkg:/components/BrowserScene.brs"/><script type="text/brightscript" uri="pkg:/source/search.brs"/><children>
+<Rectangle width="1280" height="720" color="0x0C1322FF"/>
+<Poster translation="[25,0]" width="150" height="100" uri="pkg:/images/jft-logo.png" loadDisplayMode="scaleToFit"/><Label translation="[180,25]" text="JFT CABLE" font="font:LargeBoldSystemFont" width="1100"/>
+<Label translation="[180,75]" text="Your video library • Browse, search and save favorites" width="1150" color="0xAABBD0FF"/>
+<LabelList id="nav" translation="[30,145]" itemSize="[215,43]" numRows="11"/>
+<MarkupGrid id="grid" translation="[270,140]" itemComponentName="MovieCard" itemSize="[220,235]" itemSpacing="[12,15]" numColumns="4" numRows="2" drawFocusFeedback="true"/>
+<Label id="status" translation="[270,650]" width="950" height="60" wrap="true" color="0xB8CBDDFF"/>
+<Group id="genrePanel" visible="false">
+<Rectangle width="1280" height="720" color="0x080F1CF5"/>
+<Label translation="[350,35]" width="850" text="CHOOSE A GENRE" font="font:LargeBoldSystemFont"/>
+<Label translation="[350,80]" width="850" text="Filters your current movie or TV category. Back cancels."/>
+<LabelList id="genreList" translation="[350,135]" itemSize="[650,55]" numRows="9"/>
+</Group>
+<JFTNativeResolver id="nativeResolver"/>
+<FeedTask id="feedTask"/><Video id="video" width="1280" height="720" visible="false"/>
+</children></component>
+<!-- //# sourceMappingURL=../../bundle/components/BrowserScene.xml.map -->

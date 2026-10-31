@@ -1,0 +1,14 @@
+title=JFT cable
+major_version=1
+minor_version=8
+build_version=00012
+ui_resolutions=hd
+mm_icon_focus_fhd=pkg:/images/jft-tile.png
+mm_icon_focus_hd=pkg:/images/jft-tile-hd.png
+splash_screen_hd=pkg:/images/jft-splash.png
+splash_color=#0C1322
+splash_min_time=1000
+
+
+rsg_version=2.0
+ts_path=pkg:/source/compiled/index.js

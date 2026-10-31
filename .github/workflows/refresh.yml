@@ -1,0 +1,46 @@
+name: Refresh JFT cable test source
+on:
+  workflow_dispatch:
+    inputs:
+      movie_page:
+        description: Movie page already present in the catalogue
+        default: https://1hd.one/movie/spider-man-brand-new-day-34095/
+        required: true
+        type: string
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: jft-feed
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      - name: Refresh one source
+        id: refresh
+        continue-on-error: true
+        run: npm run refresh
+        env:
+          MOVIE_PAGE: ${{ inputs.movie_page }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - uses: actions/deploy-pages@v4
+        id: deployment
+      - name: Report unsuccessful refresh
+        if: steps.refresh.outcome == 'failure'
+        run: |
+          echo 'Provider did not yield a usable source; empty playable feed published.'
+          exit 1

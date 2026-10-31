@@ -1,0 +1,8 @@
+{
+  "name": "jft-cable",
+  "private": true,
+  "scripts": {
+    "refresh": "node scripts/refresh.cjs",
+    "test": "node --test scripts/feed.test.cjs"
+  }
+}

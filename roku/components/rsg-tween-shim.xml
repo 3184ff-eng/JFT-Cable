@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2026 Roku, Inc. -->
+<!-- SPDX-License-Identifier: MIT -->
+<!--
+    Stand-in for the firmware `Tween` node when firmware does not report the "tween" feature.
+
+    `@roku-sdk/compat` aliases the `<tween>` tag to this component when the firmware has no
+    native `Tween`, so app source is unchanged either way. It presents the same field contract
+    as the native node, defaults included, and nothing more: a field the native node lacks would
+    work with the shim and break with the native node. It drives an `Animation` + `*FieldInterpolator` pair it
+    builds itself.
+
+    That pair is inserted next to this node, in its parent, rather than under it: an
+    interpolator resolves the `id` in `fieldToInterp` within the component scope that holds its
+    `Animation`, and this component's own scope cannot see the target. Because the pair is not
+    under this node, removing this node does not remove it. The `Tween` wrapper clears `targetNode`
+    when it is disposed, which releases the pair at once. A raw `<tween>` removed mid-flight
+    without clearing `targetNode` is released when its span ends, which is the next "stopped"
+    state; nothing polls. A raw `<tween>` removed while idle or paused never reaches that state,
+    so its Animation stays in the parent; clear `targetNode` first.
+
+    Field-order discipline (BrightScript fires onChange in declaration order): all config
+    fields (targetNode, field, duration, easeFunction, axis, preserveOther) are declared
+    BEFORE the trigger fields (targetValue, targetVector) so their writes land before the
+    trigger's onChange fires.
+-->
+<component name="RsgTweenShim" extends="Group">
+    <interface>
+        <!-- ── Config (must precede the trigger fields) ──────────────────────────── -->
+        <field id="targetNode" type="node" onChange="onTargetNodeChanged" />
+        <!-- Field on targetNode to animate ("translation", "scale", "opacity", ...). -->
+        <field id="field" type="string" value="translation" />
+        <field id="duration" type="float" value="0.333" />
+        <field id="easeFunction" type="string" value="linear" />
+        <!-- axis: "x" | "y" | "all". Vector fields only. Anything other than "x" or "y" is
+             "all". -->
+        <!-- @ts-field axis { type: "'x' | 'y' | 'all'" } -->
+        <field id="axis" type="string" value="all" />
+        <!-- Value held on the non-animated axis for single-axis vector animation. -->
+        <field id="preserveOther" type="float" value="0" />
+
+        <!-- ── Triggers (writing one starts the animation) ───────────────────────── -->
+        <!-- Float target. For a vector field a scalar is auto-expanded to [v, v]. -->
+        <field id="targetValue" type="float" value="0" onChange="onTargetValueChanged" />
+        <!-- Vector2d target [x, y]. -->
+        <!-- @ts-field targetVector { type: "[number, number]" } -->
+        <field id="targetVector" type="array" value="[]" onChange="onTargetVectorChanged" />
+
+        <!-- Settle candidates. A candidate has the arity of the settled value: float fields
+             and axis x/y on a vector field: number[]; axis all (the default) on a vector field:
+             [number, number][]; axis is ignored on float fields. Entries of the wrong arity are
+             skipped (a scalar under "all" is never expanded to [s, s], an array under "x" / "y"
+             is never read on one component). On a vector field one whole point is chosen
+             (strictly ahead on every moving owned component, then nearest) and applied to every
+             component the axis owns. -->
+        <!-- @ts-field proposedStops { type: "number[] | [number, number][]" } -->
+        <field id="proposedStops" type="array" value="[]" onChange="onProposedStopsChanged" />
+
+        <!-- Explicit playback control: "start" | "stop" | "pause" | "resume" | "finish". -->
+        <field id="control" type="string" value="" onChange="onControlChanged" />
+
+        <!-- ── Outputs (render thread → TypeScript) ──────────────────────────────── -->
+        <!-- @ts-field animationStart { propName: "onAnimationStart", type: "(t: [number, number]) => void" } -->
+        <field id="animationStart" type="array" value="[0,0]" />
+        <!-- @ts-field animationStop { propName: "onAnimationStop", type: "(t: [number, number, [number, number]]) => void" } -->
+        <field id="animationStop" type="array" value="[0,0]" />
+        <!-- @ts-field animationState { propName: "onAnimationState", type: "(t: [import(\"@roku-sdk/components\").AnimationState, number | import(\"@roku-sdk/components\").Vector2D]) => void" } -->
+        <field id="animationState" type="array" value="[]" />
+    </interface>
+    <script type="text/brightscript" uri="rsg-tween-shim.brs" />
+</component>
+
+<!-- //# sourceMappingURL=../../bundle/components/rsg-tween-shim.xml.map -->
