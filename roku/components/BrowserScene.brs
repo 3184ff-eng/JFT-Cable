@@ -9,7 +9,7 @@ sub init()
  m.feedTask=m.top.findNode("feedTask")
  m.feedTask.ObserveField("result","feedLoaded")
  m.feedBusy=false
- m.feedUrl=""
+ m.feedUrl="https://3184ff-eng.github.io/JFT-Cable/feed.json"
  m.resolveSequence=0
  m.resolving=false
  m.catalog=ParseJson(ReadAsciiFile("pkg:/catalog.json"))
