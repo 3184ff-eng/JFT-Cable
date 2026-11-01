@@ -15,7 +15,7 @@ async function main() {
     console.log('Source checked on this runner; home Roku playback remains unverified.');
   } catch (error) {
     // No retries or identity rotation when the provider refuses a request.
-    console.log('Source unavailable. Publishing catalogue without playable links.');
+    console.log('Source unavailable: '+String(error.message).replace(/https?:\/\/\S+/g,'[URL]')+'. Publishing catalogue without playable links.');
     process.exitCode = 1;
   }
   fs.writeFileSync('public/feed.json', JSON.stringify(buildFeed(catalog, result)));

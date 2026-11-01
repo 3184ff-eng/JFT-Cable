@@ -3,6 +3,7 @@ const root=__dirname;const sessions=new Map();
 async function request(url,options={}){
  const {body=null,headers={},limit=1000000,binary=false}=options;
  const response=await fetch(url,{method:body===null?'GET':'POST',headers:{'User-Agent':'JFT-HTTP-Resolver/0.1','Content-Type':'application/json',...headers},body:body===null?undefined:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+ console.log(JSON.stringify({stage:new URL(url).pathname.replace(/\/e\/[^/]+/,'/e/[video]'),host:new URL(url).hostname,status:response.status}));
  const reader=response.body.getReader();let chunks=[],bytes=0;
  while(bytes<limit){const {done,value}=await reader.read();if(done)break;const take=value.subarray(0,limit-bytes);chunks.push(Buffer.from(take));bytes+=take.length}
  await reader.cancel().catch(()=>{});
